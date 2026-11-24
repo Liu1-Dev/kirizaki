@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>雾崎来信 · Letters from Kirizaki</title>
+<style>
+  :root{
+    --ink:#10141A; --mist:#8E9BA5; --pale:#C8D0D4; --paper:#F6F0E2;
+    --ember:#E8792B; --gold:#C9A227;
+    --serif:"Songti SC","Noto Serif CJK SC","Source Han Serif SC","SimSun",serif;
+    --sans:"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#05070a;overflow:hidden}
+  body{font-family:var(--sans);color:var(--pale);display:flex;
+    align-items:center;justify-content:center;min-height:100vh}
+
+  #bg{position:fixed;inset:-4%;
+    background:url("assets/web/street_back.jpg") center/cover;
+    filter:blur(3px) brightness(.5) saturate(.75);
+    animation:drift 30s ease-in-out infinite alternate}
+  @keyframes drift{from{transform:scale(1) translate(0,0)}to{transform:scale(1.06) translate(-1%,-1%)}}
+  #bg::after{content:"";position:absolute;inset:0;
+    background:radial-gradient(ellipse at 50% 45%, rgba(5,7,10,.2), rgba(5,7,10,.92) 78%)}
+
+  #main{position:relative;display:flex;gap:4vw;align-items:center;
+    padding:0 5vw;flex-wrap:wrap;justify-content:center}
+
+  #brand{display:flex;gap:1.4rem;align-items:flex-start}
+  #title{display:flex;flex-direction:row-reverse;gap:.7rem;
+    writing-mode:vertical-rl;font-family:var(--serif);
+    font-size:clamp(2.6rem,6.4vh,5rem);color:var(--paper);letter-spacing:.18em;
+    text-shadow:0 0 28px rgba(246,240,226,.28),0 2px 8px rgba(0,0,0,.8)}
+  #title span:last-child{color:var(--ember)}
+  #meta{font-size:.72rem;letter-spacing:.34em;color:var(--mist);
+    writing-mode:vertical-rl;line-height:2.1;opacity:.8;padding-top:.6rem}
+
+  .card{width:clamp(230px,23vw,290px);background:rgba(10,14,19,.72);
+    border:1px solid rgba(200,208,212,.16);backdrop-filter:blur(8px);
+    padding:1.5rem 1.4rem 1.3rem;display:flex;flex-direction:column;gap:.8rem;
+    transition:transform .3s, border-color .3s, background .3s;cursor:pointer;
+    text-decoration:none;color:inherit;position:relative}
+  .card:hover{transform:translateY(-4px);border-color:rgba(246,240,226,.5);
+    background:rgba(18,24,32,.9)}
+  .card .k{font-size:.64rem;letter-spacing:.3em;color:var(--ember)}
+  .card h2{margin:0;font-family:var(--serif);font-size:1.34rem;letter-spacing:.12em;
+    color:var(--paper);font-weight:400}
+  .card p{margin:0;font-size:.78rem;line-height:1.85;color:var(--mist);flex:1}
+  .card .go{font-size:.7rem;letter-spacing:.2em;color:var(--pale);
+    border-top:1px solid rgba(200,208,212,.14);padding-top:.7rem;
+    display:flex;justify-content:space-between;align-items:center}
+  .card .go em{font-style:normal;color:var(--ember);opacity:0;transition:opacity .3s}
+  .card:hover .go em{opacity:1}
+  .card .new{position:absolute;right:0;top:0;font-size:.58rem;letter-spacing:.22em;
+    color:#160F09;background:var(--ember);padding:.18rem .5rem}
+  .card .pix{height:78px;margin:-.2rem 0 .2rem;background:
+      linear-gradient(180deg, rgba(23,36,52,.9), rgba(8,12,18,.95));
+    border:1px solid rgba(246,240,226,.12);position:relative;overflow:hidden}
+  .card .pix i{position:absolute;display:block;background:#F6F0E2;opacity:.9}
+  .card .pix .p1{left:12%;top:56%;width:6px;height:22px;background:#C9D6DC;opacity:.7}
+  .card .pix .p2{left:11%;top:44%;width:8px;height:9px;background:#1B2430;box-shadow:0 0 0 1px #0B1018}
+  .card .pix .p3{left:0;right:0;top:78%;height:22%;background:linear-gradient(180deg,rgba(233,238,240,.35),rgba(233,238,240,.08))}
+  .card .pix .p4{left:62%;top:18%;width:1px;height:46%;background:#7E96A8;opacity:.5}
+  .card .pix .p5{left:64%;top:24%;width:9px;height:12px;background:#F6F0E2}
+  .card .pix b{position:absolute;left:9%;top:14%;font-family:var(--serif);font-weight:400;
+    font-size:.62rem;letter-spacing:.24em;color:#C9D6DC}
+
+  #foot{position:fixed;bottom:1.2rem;left:0;right:0;text-align:center;
+    font-size:.64rem;letter-spacing:.24em;color:#55636F}
+  @media (max-width:900px){
+    #main{flex-direction:column;gap:1.2rem;padding:1rem}
+    #meta{display:none}
+    #title{writing-mode:horizontal-tb;flex-direction:row;font-size:2.2rem}
+    .card{width:min(88vw,340px)}
+  }
+</style>
+</head>
+<body>
+<div id="bg"></div>
+
+<div id="main">
+  <div id="brand">
+    <div id="title"><span>信</span><span>来</span><span>崎</span><span>雾</span></div>
+    <div id="meta">LETTERS FROM KIRIZAKI<br>一封寄不到的信，和三千个收不到的人</div>
+  </div>
+
+  <a class="card" href="pixel/index.html">
+    <span class="new">像素探索</span>
+    <div class="k">竖屏像素 · 六处场景</div>
+    <div class="pix" aria-hidden="true">
+      <b>信外 / 信内</b><i class="p5"></i><i class="p1"></i><i class="p2"></i>
+      <i class="p4"></i><i class="p3"></i>
+    </div>
+    <h2>雾崎来信 · 像素探索</h2>
+    <p>白鹭町、疗养院、和室、公寓、死信课、雾屿。同一处地方，信外与信内两副样子，
+       走过就能来回切。九张线索拼三条规则，九处三律，四个结局。</p>
+    <div class="go"><span>进入像素版</span><em>→</em></div>
+  </a>
+
+  <a class="card" href="avg/index.html">
+    <div class="k">竖屏 AVG · 第一章</div>
+    <h2>白鹭町 · 等待的人</h2>
+    <p>雨刚停的商店街。她撑着一把白伞，只记得「要等一封信」。
+       两次三律抉择，没有正确答案，选错的惩罚是世界被改写。</p>
+    <div class="go"><span>进入第一章</span><em>→</em></div>
+  </a>
+</div>
+
+<div id="foot">设定见《雾崎来信_设定》　·　素材与管线见 README.md</div>
+</body>
+</html>

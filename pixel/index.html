@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#05070a">
+<title>雾崎来信 · 像素探索</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="stage">
+  <canvas id="scene" width="320" height="480"></canvas>
+  <div id="crt"></div>
+
+  <!-- 顶部状态栏 -->
+  <header id="hud">
+    <div class="plaque">
+      <b id="place">死信课</b>
+      <i id="sub">第七年 · 周一</i>
+    </div>
+    <div id="hint"></div>
+    <div class="hud-right">
+      <button id="bagBtn" title="信袋">
+        <canvas class="ico" width="16" height="16" data-icon="letter"></canvas>
+        <span id="bagCount">0/9</span>
+      </button>
+      <div id="clock" title="钟">5:40</div>
+    </div>
+  </header>
+
+  <div id="fogwrap" title="雾浓度">
+    <div id="fogbar"><i></i></div>
+    <span>雾</span>
+  </div>
+
+  <div id="toast"></div>
+
+  <!-- 底部交互区 -->
+  <section id="panel">
+    <div id="who"><img id="face" alt=""><span id="whoName"></span></div>
+    <div id="say"></div>
+    <nav id="acts">
+      <button data-act="look"><b>调查</b><i>E</i></button>
+      <button data-act="bag"><b>信袋</b><i>Q</i></button>
+      <button data-act="note"><b>笔记</b><i>R</i></button>
+      <button data-act="map"><b>地图</b><i>M</i></button>
+      <button data-act="form" id="formBtn"><b>雾</b><i>F</i></button>
+    </nav>
+  </section>
+
+  <!-- 弹窗 -->
+  <div id="modal" class="hidden"><div class="sheet" id="sheet"></div></div>
+
+  <!-- 标题 -->
+  <div id="title" class="screen">
+    <div class="title-inner">
+      <div class="t-brand">
+        <h1>雾崎来信</h1>
+        <p class="t-en">LETTERS FROM KIRIZAKI</p>
+        <p class="t-sub">一封寄不到的信，和三千个收不到的人</p>
+      </div>
+      <p class="t-tag">竖屏像素探索 · 六处场景 · 信外/信内可切</p>
+      <div class="t-menu">
+        <button data-t="new">开始核销</button>
+        <button data-t="continue">继续上一趟</button>
+        <button data-t="gallery">记录卡面</button>
+        <button data-t="help">怎么玩</button>
+      </div>
+      <p class="t-foot">素材：AI生成物 · 场景概念图 / 像素交互稿　设定：《雾崎来信_设定》</p>
+    </div>
+  </div>
+
+  <div id="ending" class="screen hidden">
+    <div class="end-inner">
+      <p class="end-tag" id="endTag"></p>
+      <h2 id="endTitle"></h2>
+      <div id="endBody"></div>
+      <div class="t-menu">
+        <button data-e="again">再核销一次</button>
+        <button data-e="roam">继续漫游</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="loading">载入中…</div>
+</div>
+
+<script src="js/content.js"></script>
+<script src="js/art.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>

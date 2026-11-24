@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#080b0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<title>雾崎来信 · 第一章 白鹭町</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 整个舞台按 9:16 锁死，外部留黑 -->
+<div id="stage">
+
+  <!-- 背景两层，交叉淡入 -->
+  <div id="bgA" class="bg"></div>
+  <div id="bgB" class="bg"></div>
+
+  <!-- 立绘（用 background-image，避免 <img> 在部分渲染器里引起的整页缩放） -->
+  <div id="char"></div>
+
+  <!-- 雾线与暗角 -->
+  <div id="veil"></div>
+  <div id="vignette"></div>
+
+  <!-- 顶部：雾浓度 -->
+  <div id="topbar">
+    <div id="fogwrap">
+      <span id="foglabel">雾</span>
+      <div id="fogbar"><div id="fogfill"></div></div>
+      <span id="fogpct">18%</span>
+    </div>
+    <div id="menu">
+      <button data-act="log">记录</button>
+      <button data-act="save">存档</button>
+      <button data-act="load">读档</button>
+      <button data-act="auto">自动</button>
+      <button data-act="skip">快进</button>
+      <button data-act="title">标题</button>
+    </div>
+  </div>
+
+  <!-- 对话框 -->
+  <div id="dialogue">
+    <div id="speaker"></div>
+    <div id="text"></div>
+    <div id="next">▼</div>
+    <div id="hint">空格 / 点击 继续</div>
+  </div>
+
+  <!-- 三律选项 -->
+  <div id="choices">
+    <div id="choiceq"></div>
+    <div id="dropline">
+      <span class="drop"></span><span class="drop"></span><span class="drop"></span>
+    </div>
+    <div id="choiceopts"></div>
+  </div>
+
+  <!-- 浮层面板：记录 / 存档 -->
+  <div id="panel">
+    <div id="panelhead"><span id="paneltitle">记录</span><button id="panelclose">×</button></div>
+    <div id="panelbody"></div>
+  </div>
+
+  <!-- 章节结束 -->
+  <div id="endscreen">
+    <div id="endname"></div>
+    <div id="endstats"></div>
+    <div id="endbtns">
+      <button data-act="title">回到标题</button>
+      <button data-act="load">读档</button>
+    </div>
+  </div>
+
+  <!-- 标题 -->
+  <div id="title">
+    <div id="titlebg"></div>
+    <div id="titletxt"><span>雾</span><span>崎</span><span>来</span><span>信</span></div>    <div id="subt">一封寄不到的信，和三千个收不到的人</div>
+    <div id="titlebtns">
+      <button data-act="new">开 始</button>
+      <button data-act="continue">继 续</button>
+      <button data-act="about">关 于</button>
+    </div>
+    <div id="about">
+      <p>竖屏 AVG · 第一章「白鹭町」</p>
+      <p>这一章教你两条规则：雾里的东西会重复（R1），所有钟停在 5:40（R2）。</p>
+      <p>底图与立绘由脚本生成，替补位已留好：把同尺寸 PNG 放进 assets/avg/ 覆盖同名文件即可换成你的美术。</p>
+      <p>建议全屏 · 戴耳机</p>
+      <button data-act="aboutclose">收 起</button>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+</div>
+
+<script src="story.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
