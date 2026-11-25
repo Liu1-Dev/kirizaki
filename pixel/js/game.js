@@ -33,7 +33,7 @@
   const BG_NAMES = ['office', 'office_in', 'street', 'street_in', 'sanatorium', 'sanatorium_in',
     'washitsu', 'washitsu_in', 'apartment', 'apartment_in', 'island', 'island_in', 'title'];
   const FACE_NAMES = ['mio', 'vira', 'saya'];
-  const NPC_NAMES = ['mio'];
+  const NPC_NAMES = ['mio', 'saya', 'guitu', 'vira'];
   const IMG = {};
   let assetsReady = false;
 
@@ -120,9 +120,12 @@
 
   // ---------------------------------------------------------------- 音
   const Sound = {
-    ac: null, master: null, amb: null, ambGain: null, kind: null,
+    ac: null, master: null, amb: null, ambGain: null, kind: null, level: 0.12,
     init() {
-      if (this.ac) return;
+      if (this.ac) {
+        if (this.ac.state === 'suspended') this.ac.resume();
+        return;
+      }
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
       this.ac = new AC();
@@ -130,6 +133,10 @@
       this.master.gain.value = 0.5;
       this.master.connect(this.ac.destination);
       if (this.ac.state === 'suspended') this.ac.resume();
+      if (window.MUSIC) {
+        MUSIC.init(this.ac, this.master);
+        MUSIC.mute(!S.sound);
+      }
       this.kind = null;
       this.setAmbi(S.scene);
     },
@@ -161,7 +168,7 @@
       const g = ac.createGain();
       g.gain.value = 0;
       g.connect(this.master);
-      g.gain.setTargetAtTime(0.16, ac.currentTime, 1.2);
+      g.gain.setTargetAtTime(0.12, ac.currentTime, 1.2);
       this.ambGain = g;
       const nodes = [];
       const src = ac.createBufferSource();
@@ -169,15 +176,27 @@
       src.loop = true;
       const f = ac.createBiquadFilter();
       const cfg = {
-        office: { type: 'lowpass', freq: 320, q: 0.6, lfo: 0.06 },
-        street: { type: 'bandpass', freq: 900, q: 0.5, lfo: 0.12 },
-        sanatorium: { type: 'lowpass', freq: 640, q: 0.8, lfo: 0.05 },
+        office: { type: 'bandpass', freq: 620, q: 0.9, lfo: 0.04, trem: { rate: 0.23, depth: 0.55 } },
+        street: { type: 'bandpass', freq: 1400, q: 0.6, lfo: 0.10 },
+        sanatorium: { type: 'lowpass', freq: 640, q: 0.8, lfo: 0.05, level: 0.055 },
         washitsu: { type: 'highpass', freq: 1200, q: 0.4, lfo: 0.3 },
         apartment: { type: 'lowpass', freq: 420, q: 1.1, lfo: 0.1 },
         island: { type: 'bandpass', freq: 420, q: 0.4, lfo: 0.07 }
       }[kind] || { type: 'lowpass', freq: 500, q: 0.6, lfo: 0.1 };
       f.type = cfg.type; f.frequency.value = cfg.freq; f.Q.value = cfg.q;
+      const lv = cfg.level || 0.12;
+      this.level = lv;
+      if (lv !== 0.12) g.gain.setTargetAtTime(lv, ac.currentTime, 1.2);
       src.connect(f); f.connect(g);
+      // 风扇：慢速振幅起伏（换气 / 扇叶）
+      if (cfg.trem) {
+        const to = ac.createOscillator();
+        const tg = ac.createGain();
+        to.frequency.value = cfg.trem.rate;
+        tg.gain.value = lv * cfg.trem.depth;
+        to.connect(tg); tg.connect(g.gain); to.start();
+        nodes.push(to, tg);
+      }
       // 缓慢的呼吸
       const lfo = ac.createOscillator();
       const lg = ac.createGain();
@@ -240,6 +259,11 @@
       setTimeout(() => { try { g.disconnect(); } catch (e) {} }, 2000);
     }
   };
+
+  // 切后台 / 锁屏回来，音频上下文会被挂起，这里恢复
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && Sound.ac && Sound.ac.state === 'suspended') Sound.ac.resume();
+  });
 
   // ---------------------------------------------------------------- 叙述
   const N = {
@@ -725,9 +749,10 @@
       if (Sound.ac) {
         if (!S.sound && Sound.ambGain) Sound.ambGain.gain.setTargetAtTime(0, Sound.ac.currentTime, 0.2);
         else if (S.sound) {
-          if (Sound.ambGain) Sound.ambGain.gain.setTargetAtTime(0.16, Sound.ac.currentTime, 0.4);
+          if (Sound.ambGain) Sound.ambGain.gain.setTargetAtTime(Sound.level || 0.12, Sound.ac.currentTime, 0.4);
           else Sound.setAmbi(S.scene);
         }
+        if (window.MUSIC) MUSIC.mute(!S.sound);
       }
       save();
     });
@@ -804,6 +829,17 @@
     updateHud();
     S.lastForm[S.scene] = S.form;
     Sound.setAmbi(S.scene);
+    if (window.MUSIC) {
+      MUSIC.set(S.scene === 'washitsu' ? 'k397'
+        : S.scene === 'sanatorium' ? 'swan'
+          : S.scene === 'island' ? 'island' : null);
+      // 第一次切进红色信内：一记重音，雨声不断
+      if (S.scene === 'street' && S.form === 'in' && !S.flags.sting_street) {
+        S.flags.sting_street = true;
+        MUSIC.accent();
+        save();
+      }
+    }
     // 首次进入的叙述
     if (!S.visit[key]) {
       S.visit[key] = true;
@@ -1047,12 +1083,12 @@
   };
   const NPC_AT = {
     'street:out': { img: 'mio', x: 178, y: 362 },
-    'street:in': { chibi: 'guitu', x: 162, y: 358, ghost: true, noshadow: true },
-    'sanatorium:out': { chibi: 'vira', x: 182, y: 362 },
-    'sanatorium:in': { chibi: 'vira', x: 182, y: 362, ghost: true },
-    'washitsu:out': { chibi: 'saya', x: 208, y: 366, kneel: true },
-    'washitsu:in': { chibi: 'saya', x: 208, y: 366, kneel: true, ghost: true },
-    'island:out': { chibi: 'guitu', x: 160, y: 352, back: true, lantern: true }
+    'street:in': { img: 'guitu', x: 162, y: 358, ghost: true, noshadow: true },
+    'sanatorium:out': { img: 'vira', x: 182, y: 362 },
+    'sanatorium:in': { img: 'vira', x: 182, y: 362, ghost: true },
+    'washitsu:out': { img: 'saya', x: 208, y: 366 },
+    'washitsu:in': { img: 'saya', x: 208, y: 366, ghost: true },
+    'island:out': { img: 'guitu', x: 160, y: 352 }
   };
 
   function drawNpc(now) {
@@ -1198,6 +1234,11 @@
     }
   });
   qs('#bagBtn').addEventListener('click', (e) => { e.stopPropagation(); Sound.init(); openBag(); });
+  qs('#homeBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    save();
+    location.href = '../index.html';
+  });
   qs('#say').addEventListener('pointerdown', () => { if (N.active) N.advance(); });
 
   // ---------------------------------------------------------------- 标题 / 结局

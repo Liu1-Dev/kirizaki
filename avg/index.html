@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
-<title>雾崎来信 · 第一章 白鹭町</title>
+<title>雾崎来信 · AVG 三章</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,8 +19,10 @@
   <div id="bgA" class="bg"></div>
   <div id="bgB" class="bg"></div>
 
-  <!-- 立绘（用 background-image，避免 <img> 在部分渲染器里引起的整页缩放） -->
+  <!-- 立绘（三槽：char 居中，char2 左，char3 右；用 background-image，避免 <img> 在部分渲染器里引起的整页缩放） -->
   <div id="char"></div>
+  <div id="char2"></div>
+  <div id="char3"></div>
 
   <!-- 雾线与暗角 -->
   <div id="veil"></div>
@@ -32,6 +34,7 @@
       <span id="foglabel">雾</span>
       <div id="fogbar"><div id="fogfill"></div></div>
       <span id="fogpct">18%</span>
+      <button id="notebtn" title="线索与规则（N）">笔记 0</button>
     </div>
     <div id="menu">
       <button data-act="log">记录</button>
@@ -40,6 +43,7 @@
       <button data-act="auto">自动</button>
       <button data-act="skip">快进</button>
       <button data-act="title">标题</button>
+      <button data-act="home">主界面</button>
     </div>
   </div>
 
@@ -53,6 +57,7 @@
 
   <!-- 三律选项 -->
   <div id="choices">
+    <div id="choicetag"></div>
     <div id="choiceq"></div>
     <div id="dropline">
       <span class="drop"></span><span class="drop"></span><span class="drop"></span>
@@ -73,6 +78,7 @@
     <div id="endbtns">
       <button data-act="title">回到标题</button>
       <button data-act="load">读档</button>
+      <button data-act="home">主界面</button>
     </div>
   </div>
 
@@ -84,19 +90,26 @@
       <button data-act="new">开 始</button>
       <button data-act="continue">继 续</button>
       <button data-act="about">关 于</button>
+      <button data-act="home">主界面</button>
     </div>
     <div id="about">
-      <p>竖屏 AVG · 第一章「白鹭町」</p>
-      <p>这一章教你两条规则：雾里的东西会重复（R1），所有钟停在 5:40（R2）。</p>
-      <p>底图与立绘由脚本生成，替补位已留好：把同尺寸 PNG 放进 assets/avg/ 覆盖同名文件即可换成你的美术。</p>
+      <p>竖屏 AVG · 三章「第 41 封 / 寄给全体 / 签收人：雾屿」——回执组时间线</p>
+      <p>死信课三人编制：你、薇拉、澪。城里出现「寄给活人的信」，上门核销。规矩这次是齐的——开拆须两人在场，你们有三个。世界照样坏。</p>
+      <p>纱夜是不占编制的同伴。她很少说话，所以每次开口，都值得记住。</p>
+      <p>每章进信之前，都要先做一次「穿越判定」：读哪一封、走哪条路、跟谁的呼吸。判断没有时限，但看错了就进错层；穿越成功与否，会一路影响到最后。</p>
+      <p>信内外共用同一张场景，只有颜色不同——哪边是真的，游戏不判定。三律对应三个结局；三次都走对、两次没把名字落地的人，才走得出去。</p>
       <p>建议全屏 · 戴耳机</p>
       <button data-act="aboutclose">收 起</button>
     </div>
   </div>
 
+  <div id="flash"></div>
+  <div id="card"><div class="ct" id="cardTitle"></div><div class="cs" id="cardSub"></div></div>
+  <div id="stamp"><div class="sm" id="stampMain"></div><div class="ss" id="stampSub"></div></div>
   <div id="toast"></div>
 </div>
 
+<script src="audio.js"></script>
 <script src="story.js"></script>
 <script src="game.js"></script>
 </body>
