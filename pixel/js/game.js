@@ -101,6 +101,12 @@
         S.read.street = true;
         S.read.street_in_shown = true;
       }
+      // 旧存档修复：回访和室拿到了眼带、却因为热点重叠没拿到胡萝卜
+      if (S.flags.revisit_done && S.revisit.washitsu && S.flags.F_none &&
+        S.items.indexOf('眼带') >= 0 && S.items.indexOf('胡萝卜') < 0) {
+        S.items.push('胡萝卜');
+        S.flags._hotfix_carrot = true;
+      }
       return true;
     } catch (e) { return false; }
   }
@@ -384,7 +390,8 @@
   const val = (v) => (typeof v === 'function' ? v(S) : v);
 
   function hitTest(x, y) {
-    const list = hotspots().slice().sort((a, b) => a.w * a.h - b.w * b.h);
+    const list = hotspots().slice().sort((a, b) =>
+      ((b.priority || 0) - (a.priority || 0)) || (a.w * a.h - b.w * b.h));
     for (const h of list) {
       const pad = 8;
       if (x >= h.x - pad && x <= h.x + h.w + pad && y >= h.y - pad && y <= h.y + h.h + pad) return h;
@@ -400,7 +407,8 @@
       if (dx > h.w / 2 + 36) return;
       // 物件底边离脚底越远，优先级越低（时钟、窗这类要抬头看）
       const lift = Math.max(0, P.y - (h.y + h.h));
-      const d = dx + lift * 0.35;
+      // 同一位置叠了好几个热点时，优先选可拿的东西 / 更小的物件
+      const d = dx + lift * 0.35 - (h.priority || 0) * 4;
       if (d < bd) { bd = d; best = h; }
     });
     return best;
@@ -573,13 +581,16 @@
       const picked = ['office', 'sanatorium', 'washitsu'].filter((k) => S.revisit[k]);
       const got = picked.every((k) => (k === 'office' ? S.items.indexOf('旧存根') >= 0
         : k === 'sanatorium' ? S.items.indexOf('王冠') >= 0
-          : S.items.indexOf('眼带') >= 0));
+          : (S.items.indexOf('眼带') >= 0 && S.items.indexOf('胡萝卜') >= 0)));
       if (got) {
         S.unlocked.push('island');
         S.read.island = true;
         toast('雾把你带到了湖边。终点站：雾屿（M）。');
         save();
         updateHud();
+      } else if (!S.flags._revisit_missing) {
+        S.flags._revisit_missing = true;
+        toast('回访的地方还有东西没拿。地图（M）回去看看。', 'warn');
       }
     }
     updateHud();
@@ -740,7 +751,7 @@
       const id = b.dataset.sc;
       closeModal();
       if (id === S.scene) return;
-      const f = (canEnterInside(id) && S.lastForm[id] === 'in') ? 'in' : 'out';
+      const f = (S.revisit[id] || (canEnterInside(id) && S.lastForm[id] === 'in')) ? 'in' : 'out';
       goTo(id, f);
     }));
     sheet.querySelector('#sndBtn').addEventListener('click', (e) => {
@@ -873,8 +884,9 @@
   function currentHint() {
     const f = S.flags, sc = S.scene;
     if (sc === 'office') {
+      if (S.revisit.office && S.items.indexOf('旧存根') < 0) return '回访：柜台上还有旧存根';
       if (!f.ch_O) return '先看右边那只旧邮袋';
-      return '地图（M）→ 白鹭町';
+      return S.unlocked.indexOf('island') >= 0 ? '地图（M）→ 雾屿' : '地图（M）→ 白鹭町';
     }
     if (sc === 'street') {
       if (!f.A_done) return '药局门口的信箱，还有橱窗玻璃上那封湿信';
@@ -883,12 +895,17 @@
       return '地图（M）→ 白蔷薇疗养院';
     }
     if (sc === 'sanatorium') {
+      if (S.revisit.sanatorium && S.items.indexOf('王冠') < 0) return '回访：杯垫上还有王冠';
       if (!f.C_done) return '和窗边的病人说话';
       if (!S.read.sanatorium) return '住院簿上被剪掉的那一页';
       if (!f.D_done) return '水里那本住院簿，还没处理';
-      return '地图（M）→ 和室';
+      return S.unlocked.indexOf('island') >= 0 ? '地图（M）→ 雾屿' : '地图（M）→ 和室';
     }
     if (sc === 'washitsu') {
+      if (S.revisit.washitsu) {
+        if (S.items.indexOf('眼带') < 0 || S.items.indexOf('胡萝卜') < 0) return '榻榻米上还有眼带和胡萝卜';
+        return S.unlocked.indexOf('island') >= 0 ? '地图（M）→ 雾屿' : '地图（M）→ 另一处回访';
+      }
       if (!f.E_done) return '和服袖子里缝着一封信';
       if (!f.F_done) return '再和她说一次话';
       return '地图（M）→ 镜湖公寓';
@@ -1092,6 +1109,8 @@
   };
 
   function drawNpc(now) {
+    // 回访的和室已经空了，别再画跪坐的纱夜
+    if (S.scene === 'washitsu' && S.revisit.washitsu) return;
     const at = NPC_AT[S.scene + ':' + S.form];
     if (!at) return;
     ctx.globalAlpha = at.ghost ? 0.86 : 1;
@@ -1246,6 +1265,13 @@
     Sound.init();
     if (cont && load()) {
       // 继续
+      if (S.flags._hotfix_carrot) {
+        setTimeout(() => {
+          toast('补发：胡萝卜（回访热点修复）', 'warn');
+          delete S.flags._hotfix_carrot;
+          save();
+        }, 1200);
+      }
     } else {
       S = DEF();
       localStorage.removeItem(SAVE_KEY);
@@ -1347,8 +1373,14 @@
       S.form = params.get('form') === 'in' ? 'in' : 'out';
       S.unlocked = ['office', 'street', 'sanatorium', 'washitsu', 'apartment', 'island'];
       ['street', 'sanatorium', 'washitsu', 'apartment', 'island'].forEach((k) => { S.read[k] = true; });
-      if (params.get('revisit')) S.revisit = { office: 1, sanatorium: 1 };
+      if (params.get('revisit')) {
+        const rv = params.get('revisit');
+        S.revisit = rv === '1'
+          ? { office: 1, sanatorium: 1 }
+          : rv.split(',').reduce((o, k) => { o[k] = 1; return o; }, {});
+      }
       if (params.get('clues')) S.clues = Object.keys(CLUES).slice(0, 9);
+      if (params.get('f_none')) S.flags.F_none = true;
       S.visit = {};
       screen = 'play';
       qs('#title').classList.add('hidden');
@@ -1358,7 +1390,7 @@
   // ---------------------------------------------------------------- 调试口
   window.__KIRIZAKI__ = {
     get S() { return S; }, P, N, IMG,
-    goTo, switchForm, interact, hotspots, nearOf, scene,
+    goTo, switchForm, interact, hotspots, nearOf, hitTest, scene,
     openChoice, pickOption, openBag, openNote, openMap, openGallery, openRevisit, openHelp,
     startGame, resetGame, showEnding, applyScene, updateHud,
     get screen() { return screen; },

@@ -15,7 +15,7 @@
 
 ## Netlify
 
-把整个文件夹拖到 <https://app.netlify.com/drop>，或上传同目录的部署 zip。
+把整个文件夹拖到 <https://app.netlify.com/drop>，或上传 `发布/雾崎来信_网页版_部署包.zip`。
 地址形如 `https://xxxx-xxxx.netlify.app`。
 
 ## 更新

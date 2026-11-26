@@ -173,6 +173,7 @@
         },
         {
           id: 'stub', form: 'in', x: 120, y: 300, w: 60, h: 56, name: '旧存根', icon: 'ticket',
+          priority: 3,
           when: (s) => s.revisit.office,
           lines: [
             '抽屉最里面有一叠存根。挂号信寄出会留一张，这座城也有。',
@@ -384,6 +385,7 @@
         },
         {
           id: 'crown', form: 'in', x: 150, y: 300, w: 64, h: 84, name: '最后一杯茶', icon: 'crown',
+          priority: 3,
           when: (s) => s.revisit.sanatorium,
           lines: [
             '薇拉给你倒最后一杯茶。',
@@ -415,6 +417,7 @@
         {
           id: 'saya', form: 'both', x: 176, y: 296, w: 62, h: 92, name: '跪坐的她',
           icon: 'eyeband', talk: '黑羽 纱夜', face: 'saya',
+          when: (s) => !s.revisit.washitsu,
           lines: (s) => {
             if (s.flags.F_done) return ['「刚才有人在看我。」', '你说没有。', '「有。她每次来，你都在。」'];
             if (s.form === 'in') return ['眼带下面渗出一点黑雾。', '她说话时，嘴型和声音差半秒。'];
@@ -425,6 +428,7 @@
         {
           id: 'sleeve', form: 'out', x: 126, y: 330, w: 62, h: 66, name: '袖口里的信',
           icon: 'paper',
+          when: (s) => !s.revisit.washitsu && !s.flags.E_done,
           lines: [
             '袖子里缝着一封信。针脚细到看不见。',
             '「拆开读的人，会记住写信的人。」',
@@ -434,7 +438,8 @@
         },
         {
           id: 'carrot', form: 'both', x: 208, y: 252, w: 44, h: 50, name: '胡萝卜',
-          icon: 'carrot',
+          icon: 'carrot', priority: 2,
+          when: (s) => !s.revisit.washitsu,
           lines: (s) => s.form === 'in'
             ? ['全画面去色，只有它还是橙的。', '因为信里说的东西，要带在身上才不会被忘掉。']
             : ['她头上别着一根胡萝卜，用黑发带绑着。', '「种下去，明年就能吃到。」她说，「我种不了，所以别在头上。」']
@@ -450,7 +455,7 @@
           lines: ['线被剪断了。它偶尔会响一声，只响半下。', '你拿起听筒，里面是忙音。']
         },
         {
-          id: 'mirror', form: 'in', x: 206, y: 236, w: 46, h: 76, name: '壁龛的镜面',
+          id: 'mirror', form: 'in', x: 150, y: 236, w: 46, h: 76, name: '壁龛的镜面',
           icon: 'mirror',
           lines: [
             '镜面有水汽。水汽里站着洋装的她。',
@@ -466,13 +471,20 @@
           lines: ['字从信纸里爬出来，铺满障子。', '其中一段写着收件人：黑羽纱夜。', '障子变成信封的内衬。纸很薄，后面有东西在呼吸。']
         },
         {
-          id: 'eyeband', form: 'in', x: 118, y: 318, w: 64, h: 46, name: '黑蕾丝眼带', icon: 'eyeband',
+          id: 'eyeband', form: 'both', x: 118, y: 318, w: 64, h: 46, name: '黑蕾丝眼带', icon: 'eyeband',
+          priority: 3,
           when: (s) => s.revisit.washitsu,
-          lines: () => ['屋里没人。榻榻米上留着针、线，和一件缝了一半的和服。袖口是空的。', '眼带叠得很整齐，放在针线盒上。'],
-          item: '眼带'
+          lines: () => [
+            '屋里没人。榻榻米上留着针、线，和一件缝了一半的和服。袖口是空的。',
+            '眼带叠得很整齐，放在针线盒上。',
+            '眼带旁边，那根胡萝卜也还在。她把它留在这里了。'
+          ],
+          item: '眼带',
+          effects: { item: '胡萝卜' }
         },
         {
           id: 'carrot_keep', form: 'in', x: 200, y: 250, w: 52, h: 56, name: '留在榻榻米上的胡萝卜', icon: 'carrot',
+          priority: 3,
           when: (s) => s.revisit.washitsu && s.flags.F_none,
           lines: ['那根真的胡萝卜被留在榻榻米上，像谁忘了带走。', '她没被看过，才肯给。'],
           item: '胡萝卜'
@@ -585,7 +597,7 @@
         {
           id: 'lady', form: 'out', x: 130, y: 296, w: 60, h: 62, name: '雾边的人',
           icon: 'mirror', talk: '归途',
-          lines: ['「你送得很好。」', '你问：你是谁。', '「你猜。」']
+          lines: ['「你送得很好。」', '你问：你是谁。', '她笑而不语。黑蕾丝下面，嘴角好像弯了一下。']
         },
         {
           id: 'lantern_isle', form: 'out', x: 196, y: 156, w: 46, h: 52, name: '岛上的灯',
